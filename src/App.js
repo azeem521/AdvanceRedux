@@ -4,7 +4,8 @@ import Cart from './components/Cart/Cart';
 import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import Notification from './components/UI/Notification';
-import { sendCartData } from './store/cart-slice';
+import { fetchCartData, sendCartData } from './store/cart-actions';
+// import { sendCartData } from './store/cart-slice';
 import { uiAction } from './store/ui-slice';
 
 let isInitial=true;
@@ -12,9 +13,14 @@ let isInitial=true;
 function App() {
 
   const dispatch=useDispatch();
-  const cart=useSelector(state=>state.CartSlice.items)
+  const cart=useSelector(state=>state.CartSlice)
   const isVisible=useSelector((state)=>state.ui.cartIsVisible);
-  const notification =useSelector(state=>state.ui.notification)
+  const notification =useSelector(state=>state.ui.notification);
+  const change=useSelector(state=>state.CartSlice.changed)
+
+  // useEffect(()=>{
+  //  dispatch(fetchCartData())
+  // },[dispatch])
 
   useEffect(()=>{
     // const sendCartData=async ()=>{
@@ -43,9 +49,19 @@ function App() {
     // };
     if(isInitial){
       isInitial=false;
-      return
+      dispatch(fetchCartData())
+      console.log('isInitial renderd');
+      console.log('initialcart',cart);
+      return;
     }
-dispatch(sendCartData(cart));
+    if(change){
+      console.log(change);
+      dispatch(sendCartData(cart));
+      console.log('1st time rendered');
+      console.log('cart',cart);
+    }
+ 
+  
 
 
     // sendCartData().catch((error)=>{

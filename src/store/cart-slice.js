@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { uiAction } from "./ui-slice";
 
 
 const cartSlice=createSlice({
     name:'cartSlice',
     initialState:{
         items:[],
-        totalQuantity:0
+        totalQuantity:0,
+        changed:false
     },
     reducers:{
         replaceCart(state,action){
@@ -17,6 +17,7 @@ const cartSlice=createSlice({
             const newItem=action.payload;
             const existingItem=state.items.find((item)=>item.id===newItem.id);
             state.totalQuantity++;
+            state.changed=true
             if(!existingItem){
                 state.items.push({
                     id:newItem.id,
@@ -45,47 +46,6 @@ const cartSlice=createSlice({
     }
 });
 
-export const sendCartData=(cart)=>{
-    return async (dispatch)=>{
-        dispatch(
-            uiAction.showNotification({
-                status:'Pending',
-                title:'Sending...',
-                message:'Sending Data...'
-              })
-        );
-
-        const sendReq= async ()=>{
-            const response=await fetch('https://moviesstore-f98ff-default-rtdb.firebaseio.com/redux.json',{
-                method:"PUT",
-                body:JSON.stringify(cart)
-              });
-              if(!response.ok){
-                throw new Error('send cart data failled!!!')
-                
-        
-              }
-              // const responseData=await response.json();
-        
-              
-        }
-        try{
-            await sendReq();
-            dispatch(uiAction.showNotification({
-                status:'success',
-                title:'success!!!',
-                message:'Send data sucessfully!'
-              }))
-        }catch(err){
-            dispatch(uiAction.showNotification({
-                status:'error',
-                title:'error(catch function)',
-                message:'Could not sent data!'
-              }))
-        }
-
-    }
-}
 
 export const cartSliceAction=cartSlice.actions;
 export default cartSlice.reducer
